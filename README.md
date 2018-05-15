@@ -1,2 +1,21 @@
-# elixir-tweann
-A bunch of prototypes hopefully in the process of becoming a neuroevolution platform
+# Tweann
+
+**TODO: Add description**
+
+## Installation
+
+If [available in Hex](https://hex.pm/docs/publish), the package can be installed
+by adding `tweann` to your list of dependencies in `mix.exs`:
+
+```elixir
+def deps do
+  [
+    {:tweann, "~> 0.1.0"}
+  ]
+end
+```
+
+Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
+and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
+be found at [https://hexdocs.pm/tweann](https://hexdocs.pm/tweann).
+
