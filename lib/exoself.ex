@@ -38,7 +38,7 @@ defmodule Exoself do
       {^cx_pid, :backup, neuron_ids_and_weights} ->
         new_genotype = update_genotype(ids_and_pids, genotype, neuron_ids_and_weights)
         {:ok, file} = :file.open(file_name, :write)
-        :lists.foreach(fn(x) -> :io.format(file, "~p.~n", [x]), new_genotyoe)
+        :lists.foreach(fn(x) -> :io.format(file, "~p.~n", [x]) end, new_genotyoe)
         :file.close(file)
     end
   end
