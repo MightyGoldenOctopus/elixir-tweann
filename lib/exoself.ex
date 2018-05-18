@@ -38,7 +38,7 @@ defmodule Exoself do
       {^cx_pid, :backup, neuron_ids_and_weights} ->
         new_genotype = update_genotype(ids_and_pids, genotype, neuron_ids_and_weights)
         {:ok, file} = :file.open(file_name, :write)
-        :lists.foreach(fn(x) -> :io.format(file, "~p.~n", [x]) end, new_genotyoe)
+        :lists.foreach(fn(x) -> :io.format(file, "~p.~n", [x]) end, new_genotype)
         :file.close(file)
     end
   end
@@ -50,7 +50,7 @@ defmodule Exoself do
     pid = apply(cerebral_unit_type, :gen, [self()])
     :ets.insert(ids_and_pids, {id, pid})
     :ets.insert(ids_and_pids, {pid, id})
-    spawn_cerebral_units(ids_and_pids, cerebral_units_type, next_ids)
+    spawn_cerebral_units(ids_and_pids, cerebral_unit_type, next_ids)
   end
 
   def spawn_cerebral_units(_ids_and_pids, _cerebral_unit_type, []), do: true
@@ -63,7 +63,7 @@ defmodule Exoself do
     spid        = :ets.lookup_element(ids_and_pids, sid, 2)
     cx_pid      = :ets.lookup_element(ids_and_pids, sensor.cx_id, 2)
     s_name      = sensor.name
-    input_idps  = sensor.fanout_ids
+    fanout_ids  = sensor.fanout_ids
     fanout_pids = Enum.map(fanout_ids, fn(fanout_id) ->
                                        :ets.lookup_element(ids_and_pids, fanout_id, 2) end)
     # Send initialization order to spawned sensor
@@ -100,7 +100,7 @@ defmodule Exoself do
     input_idps  = neuron.input_idps
     output_ids  = neuron.output_ids
     # Encoding weights in tuples containing pid (`pidps`)
-    input_pidps = convert_idps_to_pidps(ids_and_pids, inputs_idps, [])
+    input_pidps = convert_idps_to_pidps(ids_and_pids, input_idps, [])
     output_pids = Enum.map(output_ids, fn(output_id) ->
                                        :ets.lookup_element(ids_and_pids, output_id, 2) end)
     # Send initialization order to spawned neuron
@@ -138,7 +138,7 @@ defmodule Exoself do
     npids     = Enum.map(nids, fn(nid) ->
                                :ets.lookup_element(ids_and_pids, nid, 2) end)
     # Send initialization order to spawned cortex
-    send(cx_pid, {self(), {cx_id, spids, apids, npids0, 1000}})
+    send(cx_pid, {self(), {cx_id, spids, apids, npids, 1000}})
   end
 
   def update_genotype(ids_and_pids, genotype, [{n_id, pidps}|weightps]) do
@@ -154,7 +154,7 @@ defmodule Exoself do
 
   def update_genotype(_ids_and_pids, genotype, []), do: genotype
 
-  def convert_pidps_to_idps(ids_and_pids, [{pid, weights}|next_input_idps]) do
+  def convert_pidps_to_idps(ids_and_pids, [{pid, weights}|next_input_idps], acc) do
     convert_pidps_to_idps(ids_and_pids, next_input_idps, [{:ets.lookup_element(ids_and_pids, pid, 2), weights}|acc])
   end
 

@@ -82,7 +82,7 @@ defmodule Constructor do
     create_neuro_layers(cx_id, actuator_id, layer_index+1, tot_layer, next_input_idps, output_nids, next_lds, [layer_neurons|acc])
   end
 
-  def create_neuro_layers(cx_id, actuator_id, layer_index, tot_layers, input_idps, nids, [], acc) do
+  def create_neuro_layers(cx_id, actuator_id, _layer_index, _tot_layers, input_idps, nids, [], acc) do
     '''
     Initialize the neurons output ids and start the recursion
     '''

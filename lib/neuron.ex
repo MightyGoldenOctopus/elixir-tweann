@@ -57,11 +57,11 @@ defmodule Neuron do
     apply the given activation function `af` to it.
     '''
     output = apply(__MODULE__, af, [acc])
-    Enum.map(output_pids, fn(output_pid) -> semd(output_pid, {self(), :forward, [output]}) end)
+    Enum.map(output_pids, fn(output_pid) -> send(output_pid, {self(), :forward, [output]}) end)
     loop(id, cx_pid, af, {input_pidps_memory, input_pidps_memory}, output_pids, 0)
   end
 
-  def tanh(x), do: :math.tanh(val)
+  def tanh(x), do: :math.tanh(x)
 
   def dot([i|next_inputs], [w|next_weights], acc) do
     dot(next_inputs, next_weights, i*w+acc)

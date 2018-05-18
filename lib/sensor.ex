@@ -30,7 +30,7 @@ defmodule Sensor do
         sensory_vector = apply(__MODULE__, sensor_name, [vl])
         # Forwarding result to connected neurons
         Enum.map(fanout_pids, fn(fanout_pid) -> 
-                              send(fanout_pid), {self(), :forward, sensory_vector} end)
+                              send(fanout_pid, {self(), :forward, sensory_vector}) end)
         loop(id, cx_pid, sensor_name, vl, fanout_pids)
       {^cx_pid, :terminate} ->
         :ok

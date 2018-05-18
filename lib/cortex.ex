@@ -25,13 +25,13 @@ defmodule Cortex do
     end
   end
 
-  def loop(id, exoself_pid, spids, {apids, apids_memory}, npids, 0) do
+  def loop(_id, exoself_pid, spids, {apids, apids_memory}, npids, 0) do
     ''' 
     End-case when all the feed-forward steps are finished, 
     back-up and terminates the NN
     '''
-    neurons_id_and_weights = get_backup(npids, [])
-    send(exoself_pidm {self(), :backup, neurons_ids_and_weights})
+    neurons_ids_and_weights = get_backup(npids, [])
+    send(exoself_pid, {self(), :backup, neurons_ids_and_weights})
     
     Enum.map(spids, fn(spid)    -> send(spid, {self(), :terminate}) end)
     Enum.map(apids, fn(apid)    -> send(apid, {self(), :terminate}) end)
@@ -51,7 +51,7 @@ defmodule Cortex do
         loop(id, exoself_pid, spids, {next_apids, apids_memory}, npids, step)
       :terminate ->
         Enum.map(spids, fn(spid) -> send(spid, {self(), :terminate}) end)
-        Enum.map(apids_memory, fn(mapid) -> send(mapid, {self(), :terminate} end))
+        Enum.map(apids_memory, fn(mapid) -> send(mapid, {self(), :terminate}) end)
         Enum.map(npids, fn(npid) -> send(npid, {self(), :terminate}) end)
     end
   end
@@ -71,10 +71,10 @@ defmodule Cortex do
     Orders to all the neurons to send a backup of their ids and weights.
     And then recursively store it upon reception.
     '''
-    send(npid, {self()}, :get_backup})
+    send(npid, {self(), :get_backup})
     receive do
       {^npid, nid, weight_tuples} ->
-        get_backup(next_npids, [{nid, weight_tuples}]|acc])
+        get_backup(next_npids, [{nid, weight_tuples}|acc])
     end
   end
 
