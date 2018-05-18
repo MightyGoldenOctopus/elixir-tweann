@@ -78,10 +78,10 @@ defmodule Cortex do
   end
 
   def get_backup([], acc) do
-  '''
-  End-case when all neurons have sent back their backup
-  '''
-  acc
+    '''
+    End-case when all neurons have sent back their backup
+    '''
+    acc
   end
 
 end
