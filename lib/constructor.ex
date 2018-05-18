@@ -58,7 +58,9 @@ defmodule Constructor do
   end
 
   def create_neuro_layers(cx_id, sensor, actuator, layer_densities) do
-    # Initialize first layer inputs and metrics
+    '''
+    Initialize first layer inputs and metrics
+    '''
     input_idps              = [{sensor.id, sensor.vl}]
     tot_layers              = length(layer_densities)
     [fl_neurons|next_lds]   = layer_densities
@@ -68,7 +70,9 @@ defmodule Constructor do
   end
 
   def create_neuro_layers(cx_id, actuator_id, layer_index, tot_layer, input_idps, nids, [next_layer_density|next_lds], acc) do
-    # Called recursively to build hidden layers connections
+    '''
+    Called recursively to build hidden layers connections
+    '''
     output_nids     = Enum.map(generate_ids(next_layer_density, []),
                       fn(id) -> {:neuron, {1, id}} end)
     # Call the function that build layer's neurons
@@ -79,25 +83,33 @@ defmodule Constructor do
   end
 
   def create_neuro_layers(cx_id, actuator_id, layer_index, tot_layers, input_idps, nids, [], acc) do
-    # Initialize the neurons output ids and start the recursion
+    '''
+    Initialize the neurons output ids and start the recursion
+    '''
     output_ids      = [actuator_id]
     layer_neurons   = create_neuro_layers(cx_id, input_idps, nids, output_ids, [])
     Enum.reverse([layer_neurons|acc])
   end
 
   def create_neuro_layers(cx_id, input_idps, [nid|next_nids], output_ids, acc) do
-    # Recursively builds neurons
+    '''
+    Recursively builds neurons
+    '''
     neuron = create_neuron(input_idps, nid, cx_id, output_ids)
     create_neuro_layers(cx_id, input_idps, next_nids, output_ids, [neuron|acc])
   end
 
   def create_neuro_layers(_cx_id, _input_idps, [], _output_ids, acc) do
-    # End-case, returns the list of all layer's neurons
+    '''
+    End-case, returns the list of all layer's neurons
+    '''
     acc
   end
 
   def create_neuron(input_idps, id, cx_id, output_ids) do
-    # Create a single neuron
+    '''
+    Create a single neuron
+    '''
     proper_input_idps = create_neural_input(input_idps, [])
     %Neuron{id: id,
             cx_id: cx_id,
@@ -107,29 +119,39 @@ defmodule Constructor do
   end
 
   def create_neural_input([{input_id, input_vl}|next_idps], acc) do
-    # Recursively create neuron's input connections and weights
+    '''
+    Recursively create neuron's input connections and weights
+    '''
     weights = create_neural_weights(input_vl, [])
     create_neural_input(next_idps, [{input_id, weights}|acc])
   end
 
   def create_neural_input([], acc) do
-  # End-case, adds the bias weight at the end of inputs list and returns it
+  '''
+  End-case, adds the bias weight at the end of inputs list and returns it
+  '''
   Enum.reverse([{:bias, :rand.uniform()-0.5}|acc])
   end
 
   def create_neural_weights(0, acc) do
-    # End-case, returns a weights vector
+    '''
+    End-case, returns a weights vector
+    '''
     acc
   end
 
   def create_neural_weights(index, acc) do
-    # Recursively create a weights vector of length `input_vl`
+    '''
+    Recursively create a weights vector of length `input_vl`
+    '''
     w = :rand.uniform()-0.5
     create_neural_weights(index-1, [w|acc])
   end
 
   def generate_ids(0, acc) do
-    # End-case, returns an ids vector
+    '''
+    End-case, returns an ids vector
+    '''
     acc
   end
 
@@ -140,7 +162,9 @@ defmodule Constructor do
   end
 
   def generate_id() do
-    # Generates an unique identifier
+    '''
+    Generates an unique identifier
+    '''
     UUID.uuid1();
   end
 
