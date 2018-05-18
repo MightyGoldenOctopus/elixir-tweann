@@ -67,7 +67,7 @@ defmodule Neuron do
     dot(next_inputs, next_weights, i*w+acc)
   end
 
-  def dot([, [bias], acc), do: acc+bias
+  def dot([], [bias], acc), do: acc+bias
 
   def dot([], [], acc), do: acc
 
