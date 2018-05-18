@@ -111,7 +111,7 @@ defmodule Exoself do
 
   def link_cerebral_units([], _ids_and_pids), do: :ok
 
-  def convert_idps_pidps(_ids_and_pids, [{:bias, bias}, acc]) do
+  def convert_idps_to_pidps(_ids_and_pids, [{:bias, bias}], acc) do
     '''
     End-case when there is only the bias remaining
     '''
