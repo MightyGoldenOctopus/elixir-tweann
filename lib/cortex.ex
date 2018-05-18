@@ -37,7 +37,8 @@ defmodule Cortex do
     Enum.map(apids, fn(apid)    -> send(apid, {self(), :terminate}) end)
     Enum.map(npids, fn(npid)    -> send(npid, {self(), :terminate}) end)
 
-    Enum.map(apids_memory, fn(mapid) -> send(mapid, {self(), :terminate}) end)
+    Enum.map(apids_memory, fn(mapid) -> 
+                           send(mapid, {self(), :terminate}) end)
   end
 
   def loop(id, exoself_pid, spids, {[apid|next_apids], apids_memory}, npids, step) do
