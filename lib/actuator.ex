@@ -44,6 +44,6 @@ defmodule Actuator do
     loop(id, cx_pid, actuator_name, {fanin_pids_memory, fanin_pids_memory}, [])
   end
 
-  def pts(result), do: IO.puts "Result: [#{Enum.join(result, ', ')}]"
+  def pts(result), do: :ok
 
 end

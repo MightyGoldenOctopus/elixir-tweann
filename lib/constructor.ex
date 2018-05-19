@@ -1,8 +1,8 @@
 defmodule Constructor do
-  import Neuron
-  import Sensor
-  import Actuator
-  import Cortex
+  alias Neuron
+  alias Sensor
+  alias Actuator
+  alias Cortex
 
   def construct_genotype(sensor_name, actuator_name, hidden_layer_densities) do
     construct_genotype(:unnamed_genotype, sensor_name, actuator_name, hidden_layer_densities)

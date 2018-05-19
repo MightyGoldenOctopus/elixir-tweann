@@ -62,6 +62,7 @@ defmodule Cortex do
     a new feed-forward step, then we wait again for the callbacks of all
     actuators proccesses saved in `apids_memory`.
     '''
+
     Enum.map(spids, fn(spid) -> send(spid, {self(), :sync}) end)
     loop(id, exoself_pid, spids, {apids_memory, apids_memory}, npids, step-1)
   end
