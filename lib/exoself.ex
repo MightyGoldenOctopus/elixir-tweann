@@ -1,9 +1,9 @@
 defmodule Exoself do
 
-  import Neuron
-  import Sensor
-  import Actuator
-  import Cortex
+  alias Neuron
+  alias Sensor
+  alias Actuator
+  alias Cortex
 
   def map(file_name) do
     {:ok, genotype} = :file.consult(file_name)
@@ -138,7 +138,7 @@ defmodule Exoself do
     npids     = Enum.map(nids, fn(nid) ->
                                :ets.lookup_element(ids_and_pids, nid, 2) end)
     # Send initialization order to spawned cortex
-    send(cx_pid, {self(), {cx_id, spids, apids, npids, 1000}})
+    send(cx_pid, {self(), {cx_id, spids, apids, npids}, 1000})
   end
 
   def update_genotype(ids_and_pids, genotype, [{n_id, pidps}|weightps]) do
