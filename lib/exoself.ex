@@ -145,10 +145,11 @@ defmodule Exoself do
     '''
     Saving the current neurons weights/connections into the genotype
     '''
-    neuron              = List.keyfind(genotype, n_id, 2)
+    neuron_index        = Enum.find_index(genotype, fn(x) -> x.id == n_id end)
+    neuron              = Enum.at(genotype, neuron_index)
     updated_input_idps  = convert_pidps_to_idps(ids_and_pids, pidps, [])
     updated_neuron      = %Neuron{neuron|input_idps: updated_input_idps}
-    updated_genotype    = List.keyreplace(genotype, n_id, 2, updated_neuron)
+    updated_genotype    = List.replace_at(genotype, neuron_index, updated_neuron)
     update_genotype(ids_and_pids, updated_genotype, weightps)
   end
 
