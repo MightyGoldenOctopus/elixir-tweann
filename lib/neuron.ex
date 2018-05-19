@@ -20,7 +20,7 @@ defmodule Neuron do
     end
   end
 
-  def loop(id, cx_pid, af, {[{input_pid, weights}|next_input_pidps] = input_pidps, input_pidps_memory}, output_pids, acc) do
+  def loop(id, cx_pid, af, {[{input_pid, weights}|next_input_pidps], input_pidps_memory} = input_pidps, output_pids, acc) do
     '''
     Standby for input signal from preceding neurons/sensors, or for
     backup order from cortex or finally for termination order.
