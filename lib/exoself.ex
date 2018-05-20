@@ -15,31 +15,51 @@ defmodule Exoself do
   def map(file_name, genotype) do
     '''
     Generating a network from the genotype file
+    and initializing the evolutionary procedure
     '''
+    {v1, v2, v3} = {:os.system_time, :os.system_time, :os.system_time}
+    :random.seed(v1, v2, v3)
     # Creating a record linking ids and pids
     ids_and_pids            = :ets.new(:id_and_pids, [:set, :private])
 
-    [cortex|cerebral_units] = genotype
+    cortex                  = Genotype.read(genotype, :cortex)
     sensor_ids              = cortex.sensor_ids
     actuator_ids            = cortex.actuator_ids
     nids                    = cortex.nids
+    scape_pids              = spawn_scapes(ids_and_pids, cortex, [cortex.id])
 
     spawn_cerebral_units(ids_and_pids, Cortex, [cortex.id])
     spawn_cerebral_units(ids_and_pids, Sensor, sensor_ids)
     spawn_cerebral_units(ids_and_pids, Actuator, actuator_ids)
     spawn_cerebral_units(ids_and_pids, Neuron, nids)
 
+    cerebral_units          = List.flatten([sensor_ids, actuator_ids, nids])
+
     link_cerebral_units(cerebral_units, ids_and_pids)
-    link_cortex(cortex, ids_and_pids)
+    {spids, npids, apids}   = link_cortex(cortex, ids_and_pids)
 
     cx_pid = :ets.lookup_element(ids_and_pids, cortex.id, 2)
-    # Saving backup updates to genotype file
+    
+    loop(file_name, genotype, ids_and_pids, cx_pid, spids, npids, apids, scape_pids, 0, 0, 0, 0, 1)
+  end
+
+  def loop(file_name, genotype, ids_and_pids, cx_pid, spids, npids, apids, scape_pids, highest_fitness, eval_acc, cycle_acc, time_acc, attempt) do
+    '''
+    For each iteration of NN, save it's genotype if it's fitness > highest fitness, if not, perturb it's weights
+    unless it's weights have already been perturbed without increasing fitness for n times with n > max_attempts
+    '''
     receive do
-      {^cx_pid, :backup, neuron_ids_and_weights} ->
-        new_genotype = update_genotype(ids_and_pids, genotype, neuron_ids_and_weights)
-        {:ok, file} = :file.open(file_name, :write)
-        :lists.foreach(fn(x) -> :io.format(file, "~p.~n", [x]) end, new_genotype)
-        :file.close(file)
+      {^cx_pid, :evaluation_completed, fitness, cycles, time} ->
+        {new_highest_fitness, new_attempt} = case fitness > highest_fitness do
+          true ->
+            Enum.map(npids, fn(npid) -> send(npid, {self(), :weight_backup}) end)
+            # Fitness increased, reset number of fitness attempts to 0
+            {fitness, 0}
+          false ->
+            perturbed_npids = get(:perturbed)
+            Enum.map(perturbed_npids, fn(npid) -> send(npid, {self(), :weight_restore}))
+        end
+        ## FIXME: Incomplete function
     end
   end
 
